@@ -11,11 +11,11 @@
  * See https://goo.gl/2aRDsh
  */
 
-importScripts("/scan2/workbox-v4.3.1/workbox-sw.js");
-workbox.setConfig({modulePathPrefix: "/scan2/workbox-v4.3.1"});
+importScripts("/scan/workbox-v4.3.1/workbox-sw.js");
+workbox.setConfig({modulePathPrefix: "/scan/workbox-v4.3.1"});
 
 importScripts(
-  "/scan2/precache-manifest.e61be327e71a7f2504a9fb814ab9f856.js"
+  "/scan/precache-manifest.188a447bd7e35cb2d4ee441b18aa000f.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "scan"});
