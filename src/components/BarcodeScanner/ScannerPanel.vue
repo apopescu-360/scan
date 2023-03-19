@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ListVideoDevices v-if="openScanner" @change="onSelectedDeviceChange"/>
+    <VideoDeviceSelector v-if="openScanner" @change="onSelectedDeviceChange"/>
     <Scanner v-if="openScanner" ref="scanner" @scan="scan" @denied="onOpenScannerClick" class="pt-4" :deviceId="selectedDeviceId" />
     <v-btn v-if="openScanner" id="closeScannerButton" icon @click="onOpenScannerClick" class="scanner-button">
       <CloseScannerIcon class="scanner-button-icon" />
@@ -17,7 +17,7 @@
 import Scanner from "@/components/BarcodeScanner/Scanner"
 import OpenScannerIcon from "@/components/BarcodeScanner/OpenScannerIcon"
 import CloseScannerIcon from "@/components/BarcodeScanner/CloseScannerIcon"
-import ListVideoDevices from "@/components/BarcodeScanner/ListVideoDevices"
+import VideoDeviceSelector from "@/components/BarcodeScanner/VideoDeviceSelector"
 
 export default {
   name: "ScannerPanel",
@@ -25,7 +25,7 @@ export default {
     OpenScannerIcon,
     CloseScannerIcon,
     Scanner,
-    ListVideoDevices
+    VideoDeviceSelector
   },
   data () {
     return {

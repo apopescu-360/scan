@@ -12,7 +12,7 @@
 
 <script>
 export default {
-  name: "ListVideoDevices",
+  name: "VideoDeviceSelector",
   data () {
     return {
       videoDevices: [],
