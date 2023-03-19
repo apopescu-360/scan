@@ -1,10 +1,10 @@
 <template>
 <v-select v-show="videoDevices.length"
   :items="videoDevices"
-  v-model="selectedVideoDevice"
+  placeholder="Default"
   item-text="label"
   item-value="deviceId"
-  label="Camere disponibile"
+  label="Default camera"
   single-line
   @change="onChange"
 />
