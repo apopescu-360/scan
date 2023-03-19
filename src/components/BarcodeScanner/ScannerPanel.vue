@@ -1,12 +1,10 @@
 <template>
   <div>
     <v-select v-show="videoDevices.length"
-          v-model="selectedVideoDevice"
           :items="videoDevices"
           item-text="label"
-          item-value="deviceId"
           label="Camere disponibile"
-          return-object
+          v-model="selectedVideoDevice"
           single-line
         />
 
@@ -53,11 +51,10 @@ export default {
     },
     async getVideoDevices () {
       const devices = await navigator.mediaDevices?.enumerateDevices()
-      if (devices) {
+      if (devices) {        
         this.videoDevices = devices.filter(device => device.kind === "videoinput")
       }
-    },
-
+    }
   }
 }
 </script>

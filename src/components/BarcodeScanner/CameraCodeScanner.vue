@@ -40,7 +40,7 @@ export default {
       return navigator && navigator.mediaDevices && "enumerateDevices" in navigator.mediaDevices
     },
     constraints () {
-      return { "video": this.camera }
+      return { "video": this.camera ? this.camera : true }
     }
   },
   methods: {
