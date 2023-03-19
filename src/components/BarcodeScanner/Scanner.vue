@@ -38,7 +38,14 @@ export default {
   },
   computed: {
     constraints () {
-      return { "video": this.deviceId ? { "deviceId": this.deviceId } : true } 
+      if (this.deviceId) {
+        return {
+          "video": {
+            "deviceId": this.deviceId
+          }
+        }
+      }
+      return null 
     }
   },
   async created () {
@@ -69,7 +76,7 @@ export default {
         if (result.text !== this.scannedVal) {
           audio.play();
           this.scannedVal = result.text 
-          this.$emit("scan", { result: result.text} )
+          this.$emit("scan", result.text)
         }
       }
     },
