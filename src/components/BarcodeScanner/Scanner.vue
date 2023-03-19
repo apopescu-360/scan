@@ -1,5 +1,13 @@
 <template>
-  <div>    
+  <div>
+    <v-card v-show="cameraAvailable" style="margin-bottom: 10px">
+      <v-list>
+        <v-subheader>Camere disponibile</v-subheader>
+        <v-list-item v-for="device in videoDevices" :key="device.deviceId">
+            <v-list-item-title v-text="device.label" />
+        </v-list-item>
+      </v-list>
+    </v-card>
     <CameraCodeScanner ref="barcodeReader" v-show="isLoaded" @scan="onScan" @load="onLoad" />
     <ErrorDialog ref="errorDialog" />
   </div>
