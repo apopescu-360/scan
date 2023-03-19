@@ -53,7 +53,7 @@ export default {
     async getVideoDevices () {
       const devices = await navigator.mediaDevices?.enumerateDevices()
       if (devices) {        
-        this.videoDevices = devices //.filter(device => device.kind === "videoinput")
+        this.videoDevices = devices.filter(device => device.kind === "videoinput")
       }
     }
   }
