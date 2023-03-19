@@ -26,7 +26,7 @@ export default {
     async getVideoDevices () {
       const devices = await navigator.mediaDevices?.enumerateDevices()
       if (devices) {        
-        this.videoDevices = devices //.filter(device => device.kind === "videoinput" && device.label.includes("back"))
+        this.videoDevices = devices.filter(device => device.kind === "videoinput" && device.label.includes("back"))
       }
     },
     onChange () {

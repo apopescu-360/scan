@@ -46,9 +46,7 @@ export default {
     this.cameraEnabled = this.cameraAvailable ? await this.isCameraEnabled() : null
   },
   mounted() {
-    // if (this.cameraEnabled) {
-      this.start()
-    // }
+    this.start()
   },
   beforeDestroy() {
     this.controls?.stop()
@@ -127,7 +125,7 @@ export default {
     constraints(newVal, oldVal) {
       if (newVal !== oldVal) {
         this.isLoaded = false;
-        this.controls.stop();
+        this.controls?.stop();
         this.start();
       }
     }
