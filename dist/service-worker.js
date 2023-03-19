@@ -15,7 +15,7 @@ importScripts("/scan2/workbox-v4.3.1/workbox-sw.js");
 workbox.setConfig({modulePathPrefix: "/scan2/workbox-v4.3.1"});
 
 importScripts(
-  "/scan2/precache-manifest.046c66715e96be59709da0601884b1d4.js"
+  "/scan2/precache-manifest.e61be327e71a7f2504a9fb814ab9f856.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "scan"});
