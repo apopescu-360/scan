@@ -1,7 +1,7 @@
 <template>
 <v-select v-show="videoDevices.length"
   :items="videoDevices"
-  placeholder="Default"
+  v-model="selectedVideoDevice"
   item-text="label"
   item-value="deviceId"
   label="Default camera"
