@@ -1,15 +1,7 @@
 <template>
   <div>
-    <v-select v-show="videoDevices.length"
-      :items="videoDevices"
-      v-model="selectedVideoDevice"
-      item-text="label"
-      item-value="deviceId"
-      label="Camere disponibile"
-      single-line
-    />
-
-    <Scanner v-if="openScanner" ref="scanner" @scan="scan" @denied="onOpenScannerClick" class="pt-4" :deviceId="selectedVideoDevice" />
+    <ListVideoDevices v-if="openScanner" @change="onSelectedDeviceChange"/>
+    <Scanner v-if="openScanner" ref="scanner" @scan="scan" @denied="onOpenScannerClick" class="pt-4" :deviceId="selectedDeviceId" />
     <v-btn v-if="openScanner" id="closeScannerButton" icon @click="onOpenScannerClick" class="scanner-button">
       <CloseScannerIcon class="scanner-button-icon" />
       <div class="scanner-button-text">Inchide Camera</div>
@@ -25,23 +17,21 @@
 import Scanner from "@/components/BarcodeScanner/Scanner"
 import OpenScannerIcon from "@/components/BarcodeScanner/OpenScannerIcon"
 import CloseScannerIcon from "@/components/BarcodeScanner/CloseScannerIcon"
+import ListVideoDevices from "@/components/BarcodeScanner/ListVideoDevices"
 
 export default {
   name: "ScannerPanel",
   components: {
     OpenScannerIcon,
     CloseScannerIcon,
-    Scanner
+    Scanner,
+    ListVideoDevices
   },
   data () {
     return {
       openScanner: false,
-      videoDevices: [],
-      selectedVideoDevice: null
+      selectedDeviceId: null
     }
-  },
-  async created () {
-    await this.getVideoDevices()
   },
   methods: {
     scan (val) {
@@ -50,11 +40,8 @@ export default {
     onOpenScannerClick () {
       this.openScanner = !this.openScanner
     },
-    async getVideoDevices () {
-      const devices = await navigator.mediaDevices?.enumerateDevices()
-      if (devices) {        
-        this.videoDevices = devices.filter(device => device.kind === "videoinput")
-      }
+    onSelectedDeviceChange (deviceId) {
+      this.selectedDeviceId = deviceId
     }
   }
 }
