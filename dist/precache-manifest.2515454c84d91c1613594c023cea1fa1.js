@@ -4,8 +4,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/scan2/apple-touch-icon.png"
   },
   {
-    "revision": "7878e60462fc2d5c7e47",
-    "url": "/scan2/css/app.50d9ad8d.css"
+    "revision": "ff0bb19d4843c414e1a7",
+    "url": "/scan2/css/app.8241b82d.css"
   },
   {
     "revision": "18dbd1a9011d52b87875",
@@ -104,12 +104,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/scan2/img/icons/safari-pinned-tab.svg"
   },
   {
-    "revision": "512022611727c60b26f03fc8c292a266",
+    "revision": "9c20d3653a9a7bbe8f1d6bf56639d8a5",
     "url": "/scan2/index.html"
   },
   {
-    "revision": "7878e60462fc2d5c7e47",
-    "url": "/scan2/js/app.05791f9d.js"
+    "revision": "ff0bb19d4843c414e1a7",
+    "url": "/scan2/js/app.1d3f4d2a.js"
   },
   {
     "revision": "18dbd1a9011d52b87875",
