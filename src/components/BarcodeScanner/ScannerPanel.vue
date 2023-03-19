@@ -1,5 +1,14 @@
 <template>
   <div>
+    <v-card v-show="videoDevices.length" style="margin-bottom: 10px">
+      <v-list>
+        <v-subheader>Camere disponibile</v-subheader>
+        <v-list-item v-for="device in videoDevices" :key="device.deviceId">
+            <v-list-item-title v-text="device.label" />
+        </v-list-item>
+      </v-list>
+    </v-card>
+
     <Scanner v-if="openScanner" ref="scanner" @scan="scan" @denied="onOpenScannerClick" class="pt-4" />
     <v-btn v-if="openScanner" id="closeScannerButton" icon @click="onOpenScannerClick" class="scanner-button">
       <CloseScannerIcon class="scanner-button-icon" />
@@ -26,8 +35,12 @@ export default {
   },
   data () {
     return {
-      openScanner: false
+      openScanner: false,
+      videoDevices: []
     }
+  },
+  async created () {
+    await this.getVideoDevices()
   },
   methods: {
     scan (val) {
@@ -35,7 +48,14 @@ export default {
     },
     onOpenScannerClick () {
       this.openScanner = !this.openScanner
-    }
+    },
+    async getVideoDevices () {
+      const devices = await navigator.mediaDevices?.enumerateDevices()
+      if (devices) {
+        this.videoDevices = devices.filter(device => device.kind === "videoinput")
+      }
+    },
+
   }
 }
 </script>
