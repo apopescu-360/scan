@@ -13,7 +13,7 @@ const manifestDeclaration = {
 }
 
 module.exports = {
-  publicPath: "/scan2/",
+  publicPath: "/scan/",
   chainWebpack: config => {
     const svgRule = config.module.rule("svg")
     svgRule.uses.clear()
