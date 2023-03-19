@@ -30,10 +30,12 @@
   },
   "dependencies": {
     "@mdi/font": "5.9.55",
+    "@zxing/browser": "^0.1.1",
+    "@zxing/library": "^0.19.1",
     "core-js": "^3.6.5",
+    "dist": "^0.1.2",
     "register-service-worker": "^1.7.1",
     "vue": "^2.6.11",
-    "vue-barcode-qrcode-scanner": "^1.0.7",
     "vue-router": "^3.6.5",
     "vuetify": "^2.5.8",
     "vuex": "^3.4.0"

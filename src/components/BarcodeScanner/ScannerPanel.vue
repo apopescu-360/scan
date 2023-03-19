@@ -10,7 +10,7 @@
           single-line
         />
 
-    <Scanner v-if="openScanner" ref="scanner" @scan="scan" @denied="onOpenScannerClick" class="pt-4" />
+    <Scanner v-if="openScanner" ref="scanner" @scan="scan" @denied="onOpenScannerClick" class="pt-4" :camera="selectedVideoDevice" />
     <v-btn v-if="openScanner" id="closeScannerButton" icon @click="onOpenScannerClick" class="scanner-button">
       <CloseScannerIcon class="scanner-button-icon" />
       <div class="scanner-button-text">Inchide Camera</div>

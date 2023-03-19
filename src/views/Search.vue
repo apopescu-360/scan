@@ -78,7 +78,7 @@ export default {
 <style scoped>
 .search-container {
   padding: 4;
-  height: 92vh;
+  height: 90vh;
 }
 .search__form {
   display: flex;

@@ -1,12 +1,12 @@
 <template>
   <div>
-    <CameraCodeScanner ref="barcodeReader" v-show="isLoaded" @scan="onScan" @load="onLoad" />
+    <CameraCodeScanner ref="barcodeReader" v-show="isLoaded" @scan="onScan" @load="onLoad" :camera="camera" />
     <ErrorDialog ref="errorDialog" />
   </div>
 </template>
 
 <script>
-import { CameraCodeScanner } from "vue-barcode-qrcode-scanner";
+import CameraCodeScanner from "@/components/BarcodeScanner/CameraCodeScanner";
 import ErrorDialog from "@/components/dialogs/ErrorDialog"
 import { ErrorDetails } from "@/model/errorDetails.js"
 import beep from "@/assets/beep.wav"
@@ -19,6 +19,10 @@ export default {
     CameraCodeScanner,
     ErrorDialog
   },
+  props: {
+    camera: null
+  },
+
   data () {
     return {
       isLoaded: false,
@@ -33,12 +37,8 @@ export default {
     this.cameraEnabled = this.cameraAvailable ? await this.isCameraEnabled() : null
   },
   methods: {
-    onLoad (controls, scannerElement, browserMultiFormatReader) {
+    onLoad () {
       this.isLoaded = true
-      console.log("---------------- ON-LOAD --------------")
-      console.log(controls)
-      console.log(scannerElement)
-      console.log(browserMultiFormatReader)
     },
     onScan (val) {
       if (val !== this.scannedVal) {
@@ -52,7 +52,6 @@ export default {
         const devices = await navigator.mediaDevices?.enumerateDevices()
         if (devices) {
           this.videoDevices = devices.filter(device => device.kind === "videoinput")
-          this.videoDevices.forEach(v => console.log(v))
           if (this.videoDevices.length > 0) {
             return true
           }
