@@ -1,13 +1,14 @@
 <template>
   <div>
-    <v-card v-show="videoDevices.length" style="margin-bottom: 10px">
-      <v-list>
-        <v-subheader>Camere disponibile</v-subheader>
-        <v-list-item v-for="device in videoDevices" :key="device.deviceId">
-            <v-list-item-title v-text="device.label" />
-        </v-list-item>
-      </v-list>
-    </v-card>
+    <v-select v-show="videoDevices.length"
+          v-model="selectedVideoDevice"
+          :items="videoDevices"
+          item-text="label"
+          item-value="deviceId"
+          label="Camere disponibile"
+          return-object
+          single-line
+        />
 
     <Scanner v-if="openScanner" ref="scanner" @scan="scan" @denied="onOpenScannerClick" class="pt-4" />
     <v-btn v-if="openScanner" id="closeScannerButton" icon @click="onOpenScannerClick" class="scanner-button">
@@ -36,7 +37,8 @@ export default {
   data () {
     return {
       openScanner: false,
-      videoDevices: []
+      videoDevices: [],
+      selectedVideoDevice: null
     }
   },
   async created () {
