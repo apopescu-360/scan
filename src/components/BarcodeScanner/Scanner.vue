@@ -24,10 +24,7 @@ export default {
     return {
       cameraEnabled: null,
       isLoaded: false,
-      codeScanner: new BrowserMultiFormatReader(
-        new Map(
-          [DecodeHintType.POSSIBLE_FORMATS, 
-          [BarcodeFormat.CODE_128, BarcodeFormat.QR_CODE]])),
+      codeScanner: null,
       controls: null,
       scannedVal: null
     }
@@ -45,6 +42,9 @@ export default {
     }
   },
   async created () {
+    const hints = new Map()
+    hints.set(DecodeHintType.POSSIBLE_FORMATS, [BarcodeFormat.CODE_128, BarcodeFormat.QR_CODE])
+    this.codeScanner = new BrowserMultiFormatReader(hints)
     this.cameraEnabled = await this.isCameraEnabled()
   },
   mounted() {

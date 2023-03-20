@@ -1,6 +1,6 @@
 <template>
   <div>
-  <v-select v-show="videoDevices?.length > 1"
+  <v-select v-show="videoDevices.length > 1"
     :items="videoDevices"
     v-model="selectedVideoDevice"
     item-text="label"
@@ -17,7 +17,7 @@ export default {
   name: "VideoDeviceSelector",
   data () {
     return {
-      videoDevices: null,
+      videoDevices: [],
       selectedVideoDevice: null
     }
   },
@@ -34,7 +34,7 @@ export default {
       try {
         const devices = await navigator.mediaDevices?.enumerateDevices()
         if (devices) {
-          this.videoDevices = devices.filter(device => device.kind === "videoinput") // && device.label.includes("back"))
+          this.videoDevices = devices.filter(device => device.kind === "videoinput")
         }
         console.log("camera not available")
       } catch (err) {
@@ -45,12 +45,12 @@ export default {
       }
     },
     onSelectionChange () {
-      this.localStorage.preferredCameraId = this.selectedVideoDevice
+      localStorage.preferredCameraId = this.selectedVideoDevice
       this.$emit("selectionChange", this.selectedVideoDevice)
     },
     persistCameraChoice (mediaDeviceInfo) {
       if (mediaDeviceInfo) {
-          this.localStorage.preferredCameraId = mediaDeviceInfo.deviceId
+          localStorage.preferredCameraId = mediaDeviceInfo.deviceId
         } 
     }
   }
