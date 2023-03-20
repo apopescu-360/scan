@@ -23,8 +23,6 @@ export default {
   },
   async created () {
     await this.loadVideoDevices()
-  },
-  mounted () {
     if (localStorage.preferredCameraId && this.videoDevices.length) {
       this.selectedVideoDevice = localStorage.preferredCameraId
     }
