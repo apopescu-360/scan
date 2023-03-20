@@ -5,33 +5,29 @@
       <div class="overlay-element"></div>
       <div class="laser"></div>
     </div>
-    <ErrorDialog ref="errorDialog" />
   </div>
 </template>
 
 <script>
-
-import { BrowserMultiFormatReader } from "@zxing/browser";
-import ErrorDialog from "@/components/dialogs/ErrorDialog"
-import { ErrorDetails } from "@/model/errorDetails.js"
+import { BrowserMultiFormatReader } from "@zxing/browser"
+import { DecodeHintType, BarcodeFormat }  from "@zxing/library"
 import beep from "@/assets/beep.wav"
 
 const audio = new Audio(beep)
 
 export default {
   name: "Scanner",
-  components: {
-    ErrorDialog
-  },
   props: {
     deviceId: null
   },
   data () {
     return {
-      cameraAvailable: null,
       cameraEnabled: null,
       isLoaded: false,
-      codeScanner: new BrowserMultiFormatReader(),
+      codeScanner: new BrowserMultiFormatReader(
+        new Map(
+          [DecodeHintType.POSSIBLE_FORMATS, 
+          [BarcodeFormat.CODE_128, BarcodeFormat.QR_CODE]])),
       controls: null,
       scannedVal: null
     }
@@ -49,51 +45,15 @@ export default {
     }
   },
   async created () {
-    this.cameraAvailable = await this.isCameraAvailable()
-    this.cameraEnabled = this.cameraAvailable ? await this.isCameraEnabled() : null
+    this.cameraEnabled = await this.isCameraEnabled()
   },
   mounted() {
     this.start()
   },
   beforeDestroy() {
-    this.controls?.stop()
+    this.close()
   },
   methods: {
-    start() {
-      if (this.constraints) {
-        console.log(this.constraints);
-        this.codeScanner.decodeFromConstraints(this.constraints, this.$refs.scanner, this.callback)
-      } else {
-        this.codeScanner.decodeFromVideoDevice(undefined, this.$refs.scanner, this.callback)
-      }
-    },
-    callback(result, error, controls) {
-      if (!this.isLoaded) {
-        this.controls = controls;
-        this.isLoaded = true;
-      }
-      if (result) {
-        if (result.text !== this.scannedVal) {
-          audio.play();
-          this.scannedVal = result.text 
-          this.$emit("scan", result.text)
-        }
-      }
-    },
-    async isCameraAvailable () {
-      try {
-        const devices = await navigator.mediaDevices?.enumerateDevices()
-        if (devices) {
-          const videoDevices = devices.filter(device => device.kind === "videoinput")
-          return videoDevices.length > 0;
-        }
-        console.log("camera not available")
-        return false
-      } catch (err) {
-        console.error(err)
-        return false
-      }
-    },
     async isCameraEnabled () {
       try {
         const permision = await navigator.permissions?.query({ name: "camera" })
@@ -104,36 +64,46 @@ export default {
         // permission unknown
         return true
       }
+    },
+    start() {
+      if (this.constraints) {
+        console.log(this.constraints)
+        this.codeScanner.decodeFromConstraints(this.constraints, this.$refs.scanner, this.scan)
+      } else {
+        this.codeScanner.decodeFromVideoDevice(undefined, this.$refs.scanner, this.scan)
+      }
+    },
+    close () {
+      this.isLoaded = false
+      this.controls?.stop()
+    },
+    restart () {
+      this.close()
+      this.start()
+    },
+    scan(result, error, controls) {
+      if (!this.isLoaded) {
+        this.controls = controls
+        this.isLoaded = true
+      }
+      if (result) {
+        if (result.text !== this.scannedVal) {
+          audio.play()
+          this.scannedVal = result.text 
+          this.$emit("scan", result.text)
+        }
+      }
     }
   },
   watch: {
-    cameraAvailable (newValue) {
-      document.body.style.cursor = "default"
-      if (!newValue) {
-        const errorDetails = new ErrorDetails(
-          "Eroare",
-          "Nu exista Camera",
-          "Inchide",
-          () => { this.$emit("denied") })
-        this.$refs.errorDialog.showDialog(errorDetails)
-      }
-    },
     cameraEnabled (newValue) {
-      document.body.style.cursor = "default"
       if (!newValue) {
-        const errorDetails = new ErrorDetails(
-          "Eroare",
-          "Accesul la camera este interzis",
-          "Inchide",
-          () => { this.$emit("denied") })
-        this.$refs.errorDialog.showDialog(errorDetails)
+        this.$emit("denied")
       }
     },
     constraints(newVal, oldVal) {
       if (newVal !== oldVal) {
-        this.isLoaded = false;
-        this.controls?.stop();
-        this.start();
+        this.restart()
       }
     }
   }

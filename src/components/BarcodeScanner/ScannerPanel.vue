@@ -1,12 +1,13 @@
 <template>
   <div>
-    <VideoDeviceSelector v-if="openScanner" @change="onSelectedDeviceChange"/>
-    <Scanner v-if="openScanner" ref="scanner" @scan="scan" @denied="onOpenScannerClick" class="pt-4" :deviceId="selectedDeviceId" />
-    <v-btn v-if="openScanner" id="closeScannerButton" icon @click="onOpenScannerClick" class="scanner-button">
+    <VideoDeviceSelector v-if="openScanner" @selectionChange="onSelectedDeviceChange" @unavailable="onCameraUnavailable"/>
+    <ErrorDialog ref="errorDialog" />
+    <Scanner v-if="openScanner" ref="scanner" @scan="onScan" @denied="onCameraDenied" class="pt-4" :deviceId="selectedDeviceId" />
+    <v-btn v-if="openScanner" id="closeScannerButton" icon @click="onScannerButtonClick" class="scanner-button">
       <CloseScannerIcon class="scanner-button-icon" />
       <div class="scanner-button-text">Inchide Camera</div>
     </v-btn>
-    <v-btn v-else id="openScannerButton" icon  @click="onOpenScannerClick" class="scanner-button">
+    <v-btn v-else id="openScannerButton" icon  @click="onScannerButtonClick" class="scanner-button">
       <OpenScannerIcon class="scanner-button-icon" />
       <div class="scanner-button-text"><span>Scaneaza cu Camera</span></div>
     </v-btn>
@@ -18,6 +19,8 @@ import Scanner from "@/components/BarcodeScanner/Scanner"
 import OpenScannerIcon from "@/components/BarcodeScanner/OpenScannerIcon"
 import CloseScannerIcon from "@/components/BarcodeScanner/CloseScannerIcon"
 import VideoDeviceSelector from "@/components/BarcodeScanner/VideoDeviceSelector"
+import ErrorDialog from "@/components/dialogs/ErrorDialog"
+import { ErrorDetails } from "@/model/errorDetails.js"
 
 export default {
   name: "ScannerPanel",
@@ -25,7 +28,8 @@ export default {
     OpenScannerIcon,
     CloseScannerIcon,
     Scanner,
-    VideoDeviceSelector
+    VideoDeviceSelector,
+    ErrorDialog
   },
   data () {
     return {
@@ -34,10 +38,26 @@ export default {
     }
   },
   methods: {
-    scan (val) {
+    onCameraUnavailable () {
+      const errorDetails = new ErrorDetails(
+          "Eroare",
+          "Nu exista Camera",
+          "Inchide",
+          () => { this.onScannerButtonClick() })
+        this.$refs.errorDialog.showDialog(errorDetails)
+    },
+    onCameraDenied () {
+      const errorDetails = new ErrorDetails(
+          "Eroare",
+          "Accesul la camera este interzis",
+          "Inchide",
+          () => { this.onScannerButtonClick() })
+        this.$refs.errorDialog.showDialog(errorDetails)
+    },
+    onScan (val) {
       this.$emit("scan", val)
     },
-    onOpenScannerClick () {
+    onScannerButtonClick () {
       this.openScanner = !this.openScanner
     },
     onSelectedDeviceChange (deviceId) {

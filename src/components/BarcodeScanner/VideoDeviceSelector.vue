@@ -1,13 +1,15 @@
 <template>
-<v-select v-show="videoDevices.length"
-  :items="videoDevices"
-  v-model="selectedVideoDevice"
-  item-text="label"
-  item-value="deviceId"
-  label="Default camera"
-  single-line
-  @change="onChange"
-/>
+  <div>
+  <v-select v-show="videoDevices?.length > 1"
+    :items="videoDevices"
+    v-model="selectedVideoDevice"
+    item-text="label"
+    item-value="deviceId"
+    label="Default camera"
+    single-line
+    @change="onSelectionChange"
+  />
+</div>
 </template>
 
 <script>
@@ -15,22 +17,30 @@ export default {
   name: "VideoDeviceSelector",
   data () {
     return {
-      videoDevices: [],
+      videoDevices: null,
       selectedVideoDevice: null
     }
   },
   async created () {
-    await this.getVideoDevices()
+    await this.loadVideoDevices()
   },
   methods: {
-    async getVideoDevices () {
-      const devices = await navigator.mediaDevices?.enumerateDevices()
-      if (devices) {        
-        this.videoDevices = devices.filter(device => device.kind === "videoinput" && device.label.includes("back"))
+    async loadVideoDevices () {
+      try {
+        const devices = await navigator.mediaDevices?.enumerateDevices()
+        if (devices) {
+          this.videoDevices = devices.filter(device => device.kind === "videoinput") // && device.label.includes("back"))
+        }
+        console.log("camera not available")
+      } catch (err) {
+        console.error(err)
+      }
+      if (this.videoDevices.length === 0) {
+          this.$emit("unavailable")
       }
     },
-    onChange () {
-        this.$emit("change", this.selectedVideoDevice)
+    onSelectionChange () {
+        this.$emit("selectionChange", this.selectedVideoDevice)
     }
   }
 }
