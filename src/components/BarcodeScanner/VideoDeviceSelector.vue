@@ -24,6 +24,11 @@ export default {
   async created () {
     await this.loadVideoDevices()
   },
+  mounted () {
+    if (localStorage.preferredCameraId && this.videoDevices.length) {
+      this.selectedVideoDevice = localStorage.preferredCameraId
+    }
+  },
   methods: {
     async loadVideoDevices () {
       try {
@@ -40,7 +45,13 @@ export default {
       }
     },
     onSelectionChange () {
-        this.$emit("selectionChange", this.selectedVideoDevice)
+      this.localStorage.preferredCameraId = this.selectedVideoDevice
+      this.$emit("selectionChange", this.selectedVideoDevice)
+    },
+    persistCameraChoice (mediaDeviceInfo) {
+      if (mediaDeviceInfo) {
+          this.localStorage.preferredCameraId = mediaDeviceInfo.deviceId
+        } 
     }
   }
 }

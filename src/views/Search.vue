@@ -57,7 +57,7 @@ export default {
   },
   methods: {
     isMobile () {
-      return /Android|iPhone/i.test(navigator.userAgent)
+      return true // /Android|iPhone/i.test(navigator.userAgent)
     },
     search () {
       this.$refs.searchSpan.innerHTML = "CAUT: " + this.searchText
