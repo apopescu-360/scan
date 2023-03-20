@@ -4,7 +4,7 @@
   v-model="selectedVideoDevice"
   item-text="label"
   item-value="deviceId"
-  label="Default camera"
+  label="Camera to use"
   single-line
   @change="onChange"
 />
