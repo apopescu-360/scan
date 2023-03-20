@@ -16,7 +16,7 @@ export default {
   data () {
     return {
       videoDevices: [],
-      selectedVideoDevice: null
+      selectedVideoDevice: null,
     }
   },
   async created () {
@@ -31,6 +31,17 @@ export default {
     },
     onChange () {
         this.$emit("change", this.selectedVideoDevice)
+        this.localStorage.preferredCameraId = this.selectedVideoDevice
+    },
+    persistCameraChoice (mediaDeviceInfo) {
+      if (mediaDeviceInfo) {
+          this.localStorage.preferredCameraId = mediaDeviceInfo.deviceId
+        } 
+    }
+  },
+  mounted () {
+    if (localStorage.preferredCameraId && this.videoDevices.length) {
+      this.selectedVideoDevice = localStorage.preferredCameraId
     }
   }
 }
