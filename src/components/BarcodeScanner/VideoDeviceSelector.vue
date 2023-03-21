@@ -1,14 +1,13 @@
 <template>
   <div>
-  <v-select v-show="videoDevices.length > 1"
+  <v-select v-show="isMoreThanOneCamera"
     :items="videoDevices"
     v-model="selectedVideoDevice"
     item-text="label"
     item-value="deviceId"
     label="Default camera"
     single-line
-    @change="onSelectionChange"
-  />
+    @change="onSelectionChange" />
 </div>
 </template>
 
@@ -21,9 +20,22 @@ export default {
       selectedVideoDevice: null
     }
   },
+  computed: {
+    isCameraAvailable () {
+      return this.videoDevices.length !== 0
+    },
+    isMoreThanOneCamera () {
+      return this.videoDevices.length > 1
+    }
+  },
   async created () {
     await this.loadVideoDevices()
-    if (localStorage.preferredCameraId && this.videoDevices.length) {
+    if (!this.isCameraAvailable) {
+      console.log("camera not available")
+      this.$emit("unavailable")
+    } else if (!(await this.isCameraEnabled())) {
+      this.$emit("denied")
+    } else if (localStorage.preferredCameraId) {
       this.selectedVideoDevice = localStorage.preferredCameraId
     }
   },
@@ -32,14 +44,21 @@ export default {
       try {
         const devices = await navigator.mediaDevices?.enumerateDevices()
         if (devices) {
-          this.videoDevices = devices.filter(device => device.kind === "videoinput")
+          this.videoDevices = devices.filter(device => device.kind === "videoinput") // && device.label.includes("back"))
         }
-        console.log("camera not available")
       } catch (err) {
         console.error(err)
       }
-      if (this.videoDevices.length === 0) {
-          this.$emit("unavailable")
+    },
+    async isCameraEnabled () {
+      try {
+        const permision = await navigator.permissions?.query({ name: "camera" })
+        console.log("camera permission: " + permision?.state)
+        return !permision || permision.state !== "denied"
+      } catch (err) {
+        console.error(err)
+        // permission unknown
+        return true
       }
     },
     onSelectionChange () {
@@ -48,8 +67,8 @@ export default {
     },
     persistCameraChoice (mediaDeviceInfo) {
       if (mediaDeviceInfo) {
-          localStorage.preferredCameraId = mediaDeviceInfo.deviceId
-        } 
+        localStorage.preferredCameraId = mediaDeviceInfo.deviceId
+      }
     }
   }
 }

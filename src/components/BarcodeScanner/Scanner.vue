@@ -22,7 +22,6 @@ export default {
   },
   data () {
     return {
-      cameraEnabled: null,
       isLoaded: false,
       codeScanner: null,
       controls: null,
@@ -33,8 +32,8 @@ export default {
     constraints () {
       if (this.deviceId) {
         return {
-          "video": {
-            "deviceId": this.deviceId
+          video: {
+            deviceId: this.deviceId
           }
         }
       }
@@ -45,7 +44,6 @@ export default {
     const hints = new Map()
     hints.set(DecodeHintType.POSSIBLE_FORMATS, [BarcodeFormat.CODE_128, BarcodeFormat.QR_CODE])
     this.codeScanner = new BrowserMultiFormatReader(hints)
-    this.cameraEnabled = await this.isCameraEnabled()
   },
   mounted() {
     this.start()
@@ -54,20 +52,9 @@ export default {
     this.close()
   },
   methods: {
-    async isCameraEnabled () {
-      try {
-        const permision = await navigator.permissions?.query({ name: "camera" })
-        console.log("camera permission: " + permision?.state)
-        return !permision || permision.state !== "denied"
-      } catch (err) {
-        console.error(err)
-        // permission unknown
-        return true
-      }
-    },
     start() {
+      console.log("constraints", this.constraints)
       if (this.constraints) {
-        console.log(this.constraints)
         this.codeScanner.decodeFromConstraints(this.constraints, this.$refs.scanner, this.scan)
       } else {
         this.codeScanner.decodeFromVideoDevice(undefined, this.$refs.scanner, this.scan)
@@ -96,11 +83,6 @@ export default {
     }
   },
   watch: {
-    cameraEnabled (newValue) {
-      if (!newValue) {
-        this.$emit("denied")
-      }
-    },
     constraints(newVal, oldVal) {
       if (newVal !== oldVal) {
         this.restart()
