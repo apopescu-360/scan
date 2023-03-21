@@ -1,8 +1,8 @@
 <template>
   <div>
-    <VideoDeviceSelector v-if="openScanner" @selectionChange="onSelectedDeviceChange" @unavailable="onCameraUnavailable"/>
+    <VideoDeviceSelector v-if="openScanner" @selectionChange="onSelectedDeviceChange" @unavailable="onCameraUnavailable" @denied="onCameraDenied" />
     <ErrorDialog ref="errorDialog" />
-    <Scanner v-if="openScanner" ref="scanner" @scan="onScan" @denied="onCameraDenied" class="pt-4" :deviceId="selectedDeviceId" />
+    <Scanner v-if="openScanner" ref="scanner" @scan="onScan" class="pt-4" :deviceId="selectedDeviceId" />
     <v-btn v-if="openScanner" id="closeScannerButton" icon @click="onScannerButtonClick" class="scanner-button">
       <CloseScannerIcon class="scanner-button-icon" />
       <div class="scanner-button-text">Inchide Camera</div>
