@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="scanner-panel-container">
     <VideoDeviceSelector v-if="openScanner" @selectionChange="onSelectedDeviceChange" @unavailable="onCameraUnavailable" @denied="onCameraDenied" />
     <ErrorDialog ref="errorDialog" />
     <Scanner v-if="openScanner" ref="scanner" @scan="onScan" class="pt-4" :deviceId="selectedDeviceId" />
@@ -13,7 +13,7 @@
     </v-btn>
   </div>
 </template>
-
+ 
 <script>
 import Scanner from "@/components/BarcodeScanner/Scanner"
 import OpenScannerIcon from "@/components/BarcodeScanner/OpenScannerIcon"
@@ -21,7 +21,7 @@ import CloseScannerIcon from "@/components/BarcodeScanner/CloseScannerIcon"
 import VideoDeviceSelector from "@/components/BarcodeScanner/VideoDeviceSelector"
 import ErrorDialog from "@/components/dialogs/ErrorDialog"
 import { ErrorDetails } from "@/model/errorDetails.js"
-
+ 
 export default {
   name: "ScannerPanel",
   components: {
@@ -43,16 +43,16 @@ export default {
           "Eroare",
           "Nu exista Camera",
           "Inchide",
-          () => { this.onScannerButtonClick() })
-        this.$refs.errorDialog.showDialog(errorDetails)
+        () => { this.onScannerButtonClick() })
+      this.$refs.errorDialog.showDialog(errorDetails)
     },
     onCameraDenied () {
       const errorDetails = new ErrorDetails(
           "Eroare",
           "Accesul la camera este interzis",
           "Inchide",
-          () => { this.onScannerButtonClick() })
-        this.$refs.errorDialog.showDialog(errorDetails)
+        () => { this.onScannerButtonClick() })
+      this.$refs.errorDialog.showDialog(errorDetails)
     },
     onScan (val) {
       this.$emit("scan", val)
@@ -66,12 +66,16 @@ export default {
   }
 }
 </script>
-
+ 
 <style scoped>
+.scanner-panel-container {
+  position: relative;
+  min-height: 90%;
+}
 .scanner-button {
   position: absolute;
   bottom: 10px;
-  width: 95% !important;
+  width: 100% !important;
   height: 42px !important;
   background-color: white;
   border-radius: 5px;
@@ -86,5 +90,5 @@ export default {
   width: 75%;
   text-align: center;
 }
-
 </style>
+ 

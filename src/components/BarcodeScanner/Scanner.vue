@@ -1,20 +1,17 @@
 <template>
   <div>
-    <div class="scanner-container" v-show="isLoaded">
-      <video poster="data:image/gif,AAAA" ref="scanner"></video>
-      <div class="overlay-element"></div>
-      <div class="laser"></div>
+    <div class="scanner-container" v-show="loaded">
+      <video ref="scanner"></video>
     </div>
   </div>
 </template>
-
+ 
 <script>
-import { BrowserMultiFormatReader } from "@zxing/browser"
-import { DecodeHintType, BarcodeFormat }  from "@zxing/library"
+import { BrowserMultiFormatReader, DecodeHintType, BarcodeFormat } from "@zxing/library"
 import beep from "@/assets/beep.wav"
-
+ 
 const audio = new Audio(beep)
-
+ 
 export default {
   name: "Scanner",
   props: {
@@ -22,137 +19,66 @@ export default {
   },
   data () {
     return {
-      isLoaded: false,
+      loaded: false,
       codeScanner: null,
-      controls: null,
       scannedVal: null
-    }
-  },
-  computed: {
-    constraints () {
-      if (this.deviceId) {
-        return {
-          video: {
-            deviceId: this.deviceId
-          }
-        }
-      }
-      return null 
     }
   },
   async created () {
     const hints = new Map()
-    hints.set(DecodeHintType.POSSIBLE_FORMATS, [BarcodeFormat.CODE_128, BarcodeFormat.QR_CODE])
+    hints.set(DecodeHintType.POSSIBLE_FORMATS, [BarcodeFormat.CODE_128, BarcodeFormat.DATA_MATRIX, BarcodeFormat.QR_CODE])
+    hints.set(DecodeHintType.TRY_HARDER, [])
     this.codeScanner = new BrowserMultiFormatReader(hints)
+    alert(this.scannedVal)
   },
-  mounted() {
-    this.start()
+  mounted () {
+    setTimeout(() => this.start(), 100)
   },
-  beforeDestroy() {
+  beforeDestroy () {
     this.close()
   },
   methods: {
-    start() {
-      console.log("constraints", this.constraints)
-      if (this.constraints) {
-        this.codeScanner.decodeFromConstraints(this.constraints, this.$refs.scanner, this.scan)
-      } else {
-        this.codeScanner.decodeFromVideoDevice(undefined, this.$refs.scanner, this.scan)
-      }
+    start () {
+      this.codeScanner.decodeFromVideoDevice(this.deviceId, this.$refs.scanner, this.scan)
     },
     close () {
-      this.isLoaded = false
-      this.controls?.stop()
+      this.loaded = false
+      // this.scannedVal = null
+      this.codeScanner.reset()
     },
     restart () {
       this.close()
       this.start()
     },
-    scan(result, error, controls) {
-      if (!this.isLoaded) {
-        this.controls = controls
-        this.isLoaded = true
+    scan (result) {
+      if (!this.loaded) {
+        this.loaded = true
       }
-      if (result) {
-        if (result.text !== this.scannedVal) {
-          audio.play()
-          this.scannedVal = result.text 
-          this.$emit("scan", result.text)
-        }
+      if (result && result.text !== this.scannedVal) {
+        audio.play()
+        this.scannedVal = result.text
+        this.$emit("scan", result.text)
       }
     }
   },
   watch: {
-    constraints(newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.restart()
-      }
+    deviceId () {
+      this.restart()
     }
   }
 }
 </script>
-
+ 
 <style scoped>
+  .scanner-container {
+    position: relative;
+    display: flex;
+  }
   video {
     max-width: 100%;
     max-height: 100%;
-  }
-  .scanner-container {
-    position: relative;
-  }
-  .overlay-element {
-    position: absolute;
-    top: 0;
-    width: 100%;
-    height: 99%;
-    background: rgba(30, 30, 30, 0.5);
-    -webkit-clip-path: polygon(
-      0% 0%,
-      0% 100%,
-      20% 100%,
-      20% 20%,
-      80% 20%,
-      80% 80%,
-      20% 80%,
-      20% 100%,
-      100% 100%,
-      100% 0%
-    );
-    clip-path: polygon(
-      0% 0%,
-      0% 100%,
-      20% 100%,
-      20% 20%,
-      80% 20%,
-      80% 80%,
-      20% 80%,
-      20% 100%,
-      100% 100%,
-      100% 0%
-    );
-  }
-  .laser {
-    width: 60%;
-    margin-left: 20%;
-    background-color: tomato;
-    height: 1px;
-    position: absolute;
-    top: 40%;
-    z-index: 2;
-    box-shadow: 0 0 4px red;
-    -webkit-animation: scanning 2s infinite;
-    animation: scanning 2s infinite;
-  }
-  @-webkit-keyframes scanning {
-    50% {
-      -webkit-transform: translateY(75px);
-      transform: translateY(75px);
-    }
-  }
-  @keyframes scanning {
-    50% {
-      -webkit-transform: translateY(75px);
-      transform: translateY(75px);
-    }
+    margin-left: auto;
+    margin-right: auto;
   }
 </style>
+ 

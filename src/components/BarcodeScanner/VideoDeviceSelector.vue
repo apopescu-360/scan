@@ -6,12 +6,12 @@
     item-text="label"
     item-value="deviceId"
     label="Default camera"
-    single-line
-    @change="onSelectionChange" />
+    single-line />
 </div>
 </template>
-
+ 
 <script>
+ 
 export default {
   name: "VideoDeviceSelector",
   data () {
@@ -29,22 +29,32 @@ export default {
     }
   },
   async created () {
+    this.loadCameraChoice()
     await this.loadVideoDevices()
     if (!this.isCameraAvailable) {
-      console.log("camera not available")
       this.$emit("unavailable")
     } else if (!(await this.isCameraEnabled())) {
       this.$emit("denied")
-    } else if (localStorage.preferredCameraId) {
-      this.selectedVideoDevice = localStorage.preferredCameraId
     }
   },
   methods: {
     async loadVideoDevices () {
       try {
-        const devices = await navigator.mediaDevices?.enumerateDevices()
+        const devices = await navigator?.mediaDevices?.enumerateDevices()
         if (devices) {
-          this.videoDevices = devices.filter(device => device.kind === "videoinput") // && device.label.includes("back"))
+          const cameras = devices
+            .filter(device => device.kind === "videoinput")
+            .map((device, count) => {
+              return {
+                deviceId: device.deviceId,
+                groupId: device.groupId,
+                label: device.label || `Camera ${count}`
+              }
+            })
+          const backCameras = cameras
+            .filter(device => device.label && device.label.toLowerCase().includes("back"))
+ 
+          this.videoDevices = backCameras.length ? backCameras : cameras
         }
       } catch (err) {
         console.error(err)
@@ -53,7 +63,6 @@ export default {
     async isCameraEnabled () {
       try {
         const permision = await navigator.permissions?.query({ name: "camera" })
-        console.log("camera permission: " + permision?.state)
         return !permision || permision.state !== "denied"
       } catch (err) {
         console.error(err)
@@ -61,18 +70,25 @@ export default {
         return true
       }
     },
-    onSelectionChange () {
-      localStorage.preferredCameraId = this.selectedVideoDevice
-      this.$emit("selectionChange", this.selectedVideoDevice)
-    },
-    persistCameraChoice (mediaDeviceInfo) {
-      if (mediaDeviceInfo) {
-        localStorage.preferredCameraId = mediaDeviceInfo.deviceId
+    loadCameraChoice () {
+      const preferredCameraId = localStorage.getItem("preferredCameraId")
+      if (preferredCameraId) {
+        this.selectedVideoDevice = preferredCameraId
       }
+    },
+    storeCameraChoice () {
+      localStorage.setItem("preferredCameraId", this.selectedVideoDevice)
+    }
+  },
+  watch: {
+    selectedVideoDevice () {
+      this.storeCameraChoice()
+      this.$emit("selectionChange", this.selectedVideoDevice)
     }
   }
 }
 </script>
-
+ 
 <style scoped>
 </style>
+ 
